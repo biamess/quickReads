@@ -1,0 +1,313 @@
+﻿$shadow-main: #16aba6;
+$shadow-text: #138f8b;
+$action-main: #f7e58b;
+$logo-main: #e9eef7;
+$logo-invert: #138f8b;
+$shadow-invert: #c3cfe3;
+$active: #cbc9ff;
+$active-hover: #bdbaff;
+$completed: #d8d8e8;
+$completed-hover: #c5c5e6;
+$border: #bac4d6;
+
+h1 {
+    @extend .logoLarge;
+    margin: 0px;
+    padding: 0px;
+    font-size: 70px;
+    letter-spacing: -.055em;
+}
+
+h2 {
+    @extend .logoSmall;
+    margin: 0px;
+    padding: 5px;
+}
+
+p {
+    margin: 0px;
+    padding: 0px;
+}
+
+a {
+    text-decoration: none;
+}
+
+input {
+    margin: 2px;
+    border-radius: 3px;
+    border: 1px solid black;
+    padding: 3px;
+}
+
+.shadow {
+    box-shadow: 5px 3px $shadow-main;
+}
+
+.appContainer {
+    font-family: helvetica;
+}
+
+.appLogo {
+    float: left;
+    padding-right: 40px;
+}
+
+.toolbar {
+    background-color: #ffffff;
+    padding-bottom: 20px;
+    border-bottom: 2px solid $border;
+}
+
+.addNew {
+    @extend .shadow;
+    padding: 15px;
+    display: inline-block;
+    background-color: $action-main;
+
+    p {
+        line-height: 1;
+    }
+}
+
+.logoLarge {
+    font-weight: 600;
+    color: $logo-main;
+    text-shadow: .03em .04em $shadow-text;
+}
+
+.logoSmall {
+    font-weight: 600;
+    color: $logo-invert;
+    text-shadow: .06em .08em $shadow-invert;
+    font-size: 24px;
+}
+
+.message {
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.5em;
+}
+
+.readListContainer {
+    margin: 10px 0 0 0;
+}
+
+.readList {
+    padding: 10px 0;
+    float: left;
+    width: 50%;
+    min-width: 325px;
+}
+
+.filterGroup {
+    display: inline-block;
+    margin-top: 2px;
+}
+
+.filterGroup:not(:last-child) {
+    border-right: 1px solid $border;
+}
+
+/* Styles for individual "Reads" */
+.readItem {
+    @extend .shadow;
+    padding: 10px 10px 0 10px;
+    max-width: 90%;
+    margin: auto;
+    transition-duration: 0.4s;
+}
+
+.readItem:not(:last-child) {
+    margin-bottom: 6px;
+}
+
+.readName {
+    color: black;
+    font-size: 16px;
+}
+
+.readInfo:hover {
+    .readName {
+        text-decoration: underline;
+    }
+}
+
+.activeReadList {
+    .readItem {
+        background-color: $active;
+    }
+
+    .readItem:hover {
+        background-color: $active-hover;
+    }
+
+    .readInfo {
+        border-bottom: 2px solid $active;
+    }
+}
+
+.completedReadList {
+    .readItem {
+        background-color: $completed;
+    }
+
+    .readItem:hover {
+        background-color: $completed-hover;
+    }
+
+    .readInfo {
+        border-bottom: 2px solid $completed;
+    }
+}
+
+.readFlair {
+    display: inline-block;
+}
+
+.readFlair {
+    .favorite {
+        color: #d99400;
+    }
+
+    .favorite:hover {
+        color: #dbae4d;
+    }
+
+    .important {
+        color: #e63c5e;
+    }
+
+    .important:hover {
+        color: #e87289;
+    }
+
+    i:hover {
+        cursor: pointer;
+    }
+}
+
+.timeStamp {
+    padding: 5px 0;
+    color: #5b5b69;
+    font-size: .8em;
+}
+/* End styles for individual "Reads" */
+
+/* Button styles */
+.buttonShadow {
+    box-shadow: 2px 2px $shadow-main;
+}
+
+.roundButton {
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+    padding: 3px 5px;
+    text-align: center;
+    display: inline-block;
+    margin: 2px;
+}
+
+.appButton {
+    @extend .roundButton;
+    @extend .buttonShadow;
+    background-color: #ffffff;
+    transition-duration: 0.4s;
+}
+
+.appButton:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.appButton:active {
+    box-shadow: 2px 1px $shadow-main;
+    transform: translateY(1px);
+}
+
+.filterButton {
+    @extend .roundButton;
+    background-color: inherit;
+    text-decoration: underline;
+    transition-duration: 0.4s;
+}
+
+.filterButton:hover {
+    @extend .buttonShadow;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.activeFilterButton {
+    @extend .roundButton;
+    background-color: #000000;
+    color: #ffffff;
+    text-decoration: underline;
+    transition-duration: 0.4s;
+}
+
+.activeFilterButton:hover {
+    @extend .buttonShadow;
+    background-color: #e9eef7;
+    color: #000000;
+}
+
+.filterButton:active {
+    box-shadow: 2px 1px $shadow-main;
+    transform: translateY(1px);
+}
+
+.readButton {
+    @extend .appButton;
+    float: right;
+}
+
+.flairButton {
+    display: inline-block;
+    padding-right: 4px;
+}
+
+.buttonIcon {
+    font-size: 14px;
+    margin: 0 1px;
+    display: inline-flex;
+    vertical-align: text-bottom;
+}
+/* End Button styles*/
+
+/* Tooltip styles */
+.tooltipContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltipContainer .tooltip {
+    @extend .buttonShadow;
+    visibility: hidden;
+    background-color: black;
+    color: #ffffff;
+    text-align: center;
+    font-size: 12px;
+    padding: 3px 5px;
+    border-radius: 3px;
+    position: absolute;
+    z-index: 1;
+    left: 105%;
+}
+
+.tooltipContainer:hover .tooltip {
+    visibility: visible;
+}
+
+.tooltipContainer .tooltip::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+/* End Tooltip styles */
