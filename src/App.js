@@ -433,3 +433,5 @@ function Logo(props) {
             <h1>quickReads</h1>
         </div>);
 }
+
+export default App;
