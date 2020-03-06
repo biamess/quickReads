@@ -433,7 +433,3 @@ function Logo(props) {
             <h1>quickReads</h1>
         </div>);
 }
-
-// Render the app
-const domContainer = document.querySelector('#main');
-ReactDOM.render(<App />, domContainer);
