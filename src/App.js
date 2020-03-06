@@ -74,7 +74,10 @@ class App extends React.Component {
     render() {
         return (
             <div className="appContainer">
-                <Toolbar onAddNewRead={this.onAddNewRead} />
+                <div className="toolbar">
+                    <Logo />
+                    <ReadInput animate={this.state.reads.length == 0} onAddNewRead={this.onAddNewRead} />
+                </div>
 
                 {/*Display either a welcome message or filters and the list of reads depending on whether there is any data to display*/}
                 {this.state.reads.length == 0 ?
@@ -350,7 +353,7 @@ class ReadInput extends React.Component {
     // Render the "add new" input box
     render() {
         return (
-            <div id="addNewRead" className="addNew">
+            <div id="addNewRead" className={"addNew" + (this.props.animate ? " shake" : "")}>
                 <form onSubmit={this.handleSubmit}>
                     <p>Add a new read</p>
                     <input type="url" id="urlInput" placeholder="enter url" value={this.state.url} onChange={this.handleUrlInput} />
@@ -384,15 +387,6 @@ class FlairButton extends React.Component {
             </div>
         );
     }
-}
-
-// Main toolbar for the app
-function Toolbar(props) {
-    return (
-        <div className="toolbar">
-            <Logo />
-            <ReadInput onAddNewRead={props.onAddNewRead} />
-        </div>);
 }
 
 // Filters to allow the user to adjust which reads are displayed
