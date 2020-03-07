@@ -160,7 +160,7 @@ input {
     transition-duration: 0.4s;
 }
 
-.readItemContainer:not(:last-child) {
+.readItem:not(:last-child) {
     margin-bottom: 6px;
 }
 
@@ -188,7 +188,7 @@ input {
         border-bottom: 2px solid $active;
     }
 
-    .editMode {
+    .readItem.editMode {
         background-color: $action-edit;
     }
 }
@@ -206,7 +206,7 @@ input {
         border-bottom: 2px solid $completed;
     }
 
-    .editMode {
+    .readItem.editMode {
         background-color: $action-edit;
     }
 }

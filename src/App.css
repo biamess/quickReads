@@ -117,7 +117,7 @@ input {
   margin: auto;
   transition-duration: 0.4s; }
 
-.readItemContainer:not(:last-child) {
+.readItem:not(:last-child) {
   margin-bottom: 6px; }
 
 .readName {
@@ -136,7 +136,7 @@ input {
 .activeReadList .readInfo {
   border-bottom: 2px solid #cbc9ff; }
 
-.activeReadList .editMode {
+.activeReadList .readItem.editMode {
   background-color: #b2d4ca; }
 
 .completedReadList .readItem {
@@ -148,7 +148,7 @@ input {
 .completedReadList .readInfo {
   border-bottom: 2px solid #d8d8e8; }
 
-.completedReadList .editMode {
+.completedReadList .readItem.editMode {
   background-color: #b2d4ca; }
 
 .readAction {

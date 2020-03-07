@@ -8,12 +8,12 @@ class App extends React.Component {
 
         // todo: remove
         // ********** FOR TESTING ONLY ***********
-        const useTestData = true;
+        const useTestData = false;
         const testData = [
-            { displayName: "React", url: "https://reactjs.org/", timeStamp: new Date(2020, 2, 3, 20, 0, 8, 0), isFavorite: false, isImportant: true, isComplete: false },
-            { displayName: "Css Facts", url: "https://www.sitepoint.com/12-little-known-css-facts/", timeStamp: new Date(2020, 0, 3, 18, 0, 0, 0), isFavorite: true, isImportant: false, isComplete: false },
-            { displayName: "Area under curve", url: "https://www.youtube.com/watch?v=OaCVdzr3MjM", timeStamp: new Date(2020, 0, 29, 20, 0, 8, 0), isFavorite: false, isImportant: false, isComplete: false },
-            { displayName: "ColorPicker", url: "https://htmlcolorcodes.com/color-picker/", timeStamp: Date.now(), isFavorite: false, isImportant: false, isComplete: true },
+            { displayName: "React", url: "https://reactjs.org/", timeStamp: Date.now(), isFavorite: false, isImportant: true, isComplete: false },
+            { displayName: "Css Facts", url: "https://www.sitepoint.com/12-little-known-css-facts/", timeStamp: new Date(2020, 1, 29, 18, 0, 0, 0), isFavorite: true, isImportant: false, isComplete: false },
+            { displayName: "Area under curve", url: "https://www.youtube.com/watch?v=OaCVdzr3MjM", timeStamp: new Date(2020, 1, 9, 20, 0, 8, 0), isFavorite: false, isImportant: false, isComplete: false },
+            { displayName: "ColorPicker", url: "https://htmlcolorcodes.com/color-picker/", timeStamp: new Date(2020, 0, 3, 20, 0, 8, 0), isFavorite: false, isImportant: false, isComplete: true },
         ];
         const initialReads = useTestData ? testData : [];
         // *****************************************
@@ -165,7 +165,7 @@ class ReadList extends React.Component {
     // Create a list of Read components from a list of reads data
     createReads(readsData) {
         return readsData.map(
-            (item) => <Read uniqueKey={"Read" + item.readIndex} read={item} onSaveEditRead={this.props.onSaveEditRead} onDeleteRead={this.props.onDeleteRead} onCompleteRead={this.props.onCompleteRead} onFaveButtonPress={this.props.onFaveButtonPress} onImportantButtonPress={this.props.onImportantButtonPress} />);
+            (item) => <Read key={item.timeStamp} read={item} onSaveEditRead={this.props.onSaveEditRead} onDeleteRead={this.props.onDeleteRead} onCompleteRead={this.props.onCompleteRead} onFaveButtonPress={this.props.onFaveButtonPress} onImportantButtonPress={this.props.onImportantButtonPress} />);
     }
 
     // Render the list of reads taking into account filter settings
@@ -282,20 +282,22 @@ class Read extends React.Component {
     // Render the Read component
     render() {
         return (
-            <div className="readItemContainer">
+            <div className={"readItem" + (this.state.editMode ? " editMode" : "")}>
+
                 {/* Display the edit popup if in edit mode */}
                 {
                     this.state.editMode ?
                         <EditRead displayName={this.props.read.displayName} url={this.props.read.url} onSave={this.handleSaveEdit} onCancel={this.handleCancelEdit} /> :
                         null
                 }
-            <div key={this.props.uniqueKey} className={"readItem" + (this.state.editMode ? " editMode" : "")}>
+
                 <a href={this.props.read.url} target="_blank" rel="noopener noreferrer" >
                     <div className="readInfo">
                         <p className="readName" >{this.props.read.displayName || this.props.read.url}</p>
                         <ReadTimeStamp timeStamp={this.props.read.timeStamp} />
                     </div>
                 </a>
+
                 <div className="readAction">
                     <div className="readFlair">
                         <IconButton buttonClass="flairButton" iconClass="favorite" iconName={this.props.read.isFavorite ? "star" : "star_border"} tooltip={this.props.read.isFavorite ? "Unfavorite" : "Favorite"} onButtonPress={this.handleFaveButtonPress} />
@@ -304,6 +306,7 @@ class Read extends React.Component {
 
                     <IconButton buttonClass="readButton" iconClass="buttonIcon" iconName="clear" tooltip="Delete" onButtonPress={this.handleDelete} />
                     <IconButton buttonClass="readButton" iconClass="buttonIcon" iconName="edit" tooltip="Edit" onButtonPress={this.handleEdit} />
+
                     {/* If the read is not yet completed, display a button to complete it*/}
                     {
                         !this.props.read.isComplete ?
@@ -311,34 +314,29 @@ class Read extends React.Component {
                             null
                     }
                 </div>
-                </div>
-                </div>);
+            </div>);
     }
 }
 
 // Component representing the timestamp of a Read
 class ReadTimeStamp extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     // Determine the display text depending on how long ago the read was added/completed
     getDisplayText(timeStamp) {
         let displayText;
-        const minsAge = (Date.now() - this.props.timeStamp) / 60000;
+        const minsAge = (Date.now() - timeStamp) / 60000;
 
         if (minsAge < 1) {
             displayText = "just now";
         }
-        else if (minsAge < 60) {
+        else if (minsAge < 60) { // less than an hour old
             const mins = Math.floor(minsAge);
             displayText = mins + (mins > 1 ? " minutes" : " minute") + " ago";
         }
-        else if (minsAge < 1440) {
+        else if (minsAge < 1440) { // less than a day old
             const hours = Math.floor(minsAge / 60);
             displayText = hours + (hours > 1 ? " hours" : " hour") + " ago";
         }
-        else {
+        else { 
             const days = Math.floor((minsAge / 60) / 24);
             displayText = days + (days > 1 ? " days" : " day") + " ago";
         }
@@ -401,7 +399,7 @@ class ReadInput extends React.Component {
                     <input type="url" id="urlInput" placeholder="Enter url" value={this.state.url} onChange={this.handleUrlInput} />
                     <input type="text" placeholder="Enter display name" value={this.state.displayName} onChange={this.handleDisplayNameInput} />
 
-                    {/*Include a cancel button if a handler is provided*/}
+                    {/*Include a cancel button if a cancel handler is provided*/}
                     {
                         this.props.handleCancel ?
                         <button type="button" className="appButton" onClick={this.props.handleCancel}>Cancel</button> :
@@ -449,19 +447,19 @@ function Filters(props) {
     return (
         <div>
             <div className="filterGroup">
-                <FilterButton uniqueKey="viewActive" displayName="View Active" isActive={props.filterActive} clickHandler={props.onViewActivePress} />
+                <FilterButton displayName="View Active" isActive={props.filterActive} clickHandler={props.onViewActivePress} />
 
-                <FilterButton uniqueKey="viewCompleted" displayName="View Completed" isActive={props.filterCompleted} clickHandler={props.onViewCompletedPress} />
+                <FilterButton displayName="View Completed" isActive={props.filterCompleted} clickHandler={props.onViewCompletedPress} />
             </div>
 
             <div className="filterGroup">
-                <FilterButton uniqueKey="filterFavorites" displayName="Favorites" isActive={props.filterFavorites} clickHandler={props.onFilterFavoritesPress} />
+                <FilterButton displayName="Favorites" isActive={props.filterFavorites} clickHandler={props.onFilterFavoritesPress} />
 
-                <FilterButton uniqueKey="filterImportant" displayName="Important" isActive={props.filterImportant} clickHandler={props.onFilterImportantPress} />
+                <FilterButton displayName="Important" isActive={props.filterImportant} clickHandler={props.onFilterImportantPress} />
             </div>
 
             <div className="filterGroup">
-                <FilterButton uniqueKey="clearFilters" displayName="Clear Filters" isActive={false} clickHandler={props.onClearFiltersPress} />
+                <FilterButton displayName="Clear Filters" isActive={false} clickHandler={props.onClearFiltersPress} />
             </div>
         </div>
     )
@@ -470,7 +468,7 @@ function Filters(props) {
 // Button for applying/removing a filter
 function FilterButton(props) {
     return (
-        <button type="button" key={props.uniqueKey} className={props.isActive ? "activeFilterButton" : "filterButton"} onClick={props.clickHandler}>{props.displayName}</button>
+        <button type="button" className={props.isActive ? "activeFilterButton" : "filterButton"} onClick={props.clickHandler}>{props.displayName}</button>
     );
 }
 
