@@ -23,6 +23,7 @@ class App extends React.Component {
         };
 
         this.onAddNewRead = this.onAddNewRead.bind(this);
+        this.onSaveEditRead = this.onSaveEditRead.bind(this);
         this.onDeleteRead = this.onDeleteRead.bind(this);
         this.onCompleteRead = this.onCompleteRead.bind(this);
         this.onFaveButtonPress = this.onFaveButtonPress.bind(this);
@@ -33,6 +34,16 @@ class App extends React.Component {
     // Add a new read with given url and displayName
     onAddNewRead(url, displayName) {
         this.setState((state) => ({ initialized: true, reads: [{ displayName: displayName, url: url, timeStamp: new Date(), isFavorite: false, isImportant: false, isComplete: false }, ...state.reads] }));
+    }
+
+    // Update an edited read
+    onSaveEditRead(index, url, displayName) {
+        this.setState((state) => {
+            const updatedReads = [...state.reads];
+            updatedReads[index].url = url || updatedReads[index].url;
+            updatedReads[index].displayName = displayName || updatedReads[index].displayName;
+            return { reads: updatedReads };
+        });
     }
 
     // Delete the read at index
@@ -76,17 +87,17 @@ class App extends React.Component {
             <div className="appContainer">
                 <div className="toolbar">
                     <Logo />
-                    <ReadInput animate={this.state.reads.length == 0} onAddNewRead={this.onAddNewRead} />
+                    <NewRead animate={this.state.reads.length === 0} onSave={this.onAddNewRead} />
                 </div>
 
                 {/*Display either a welcome message or filters and the list of reads depending on whether there is any data to display*/}
-                {this.state.reads.length == 0 ?
+                {this.state.reads.length === 0 ?
                     <div class="message">
                         <p> Welcome to <span class="logoSmall">quickReads</span>, a tool to keep track of articles, tutorials, and other webpages that you'd like to visit later!</p>
                         <p> <span class="logoSmall">Reads</span> that you have saved will appear here. </p>
                         <p> Add a new <span class="logoSmall">read</span> above to get started!</p>
                     </div> :
-                    <ReadList onDeleteRead={this.onDeleteRead} onCompleteRead={this.onCompleteRead} onFaveButtonPress={this.onFaveButtonPress} onImportantButtonPress={this.onImportantButtonPress} reads={this.state.reads} />
+                    <ReadList onSaveEditRead={this.onSaveEditRead} onDeleteRead={this.onDeleteRead} onCompleteRead={this.onCompleteRead} onFaveButtonPress={this.onFaveButtonPress} onImportantButtonPress={this.onImportantButtonPress} reads={this.state.reads} />
                 }
             </div>);
     }
@@ -154,7 +165,7 @@ class ReadList extends React.Component {
     // Create a list of Read components from a list of reads data
     createReads(readsData) {
         return readsData.map(
-            (item) => <Read key={"Read" + item.readIndex} readIndex={item.readIndex} displayName={item.displayName} url={item.url} timeStamp={item.timeStamp} isImportant={item.isImportant} isFavorite={item.isFavorite} isComplete={item.isComplete} onDeleteRead={this.props.onDeleteRead} onCompleteRead={this.props.onCompleteRead} onFaveButtonPress={this.props.onFaveButtonPress} onImportantButtonPress={this.props.onImportantButtonPress} />);
+            (item) => <Read uniqueKey={"Read" + item.readIndex} read={item} onSaveEditRead={this.props.onSaveEditRead} onDeleteRead={this.props.onDeleteRead} onCompleteRead={this.props.onCompleteRead} onFaveButtonPress={this.props.onFaveButtonPress} onImportantButtonPress={this.props.onImportantButtonPress} />);
     }
 
     // Render the list of reads taking into account filter settings
@@ -163,7 +174,7 @@ class ReadList extends React.Component {
         let preparedReads = this.props.reads.map((read, index) => ({ ...read, readIndex: index }));
 
         // If both OR no filters are selected, display all.
-        const viewAllStatuses = this.state.filterActive == this.state.filterCompleted;
+        const viewAllStatuses = this.state.filterActive === this.state.filterCompleted;
         const viewAllFlair = !(this.state.filterFavorites || this.state.filterImportant);
 
         let filteredReads = [];
@@ -195,7 +206,7 @@ class ReadList extends React.Component {
             <div className="readListContainer">
                 <Filters onViewActivePress={this.onViewActivePress} filterActive={this.state.filterActive} onViewCompletedPress={this.onViewCompletedPress} filterCompleted={this.state.filterCompleted} onClearFiltersPress={this.onClearFiltersPress} onFilterFavoritesPress={this.onFilterFavoritesPress} onFilterImportantPress={this.onFilterImportantPress} filterFavorites={this.state.filterFavorites} filterImportant={this.state.filterImportant} />
 
-                {(activeReads.length == 0 && completedReads.length == 0) ?
+                {(activeReads.length === 0 && completedReads.length === 0) ?
                     <p className="message">Nothing to show here!</p> : null}
 
                 {activeReads.length > 0 ?
@@ -218,63 +229,90 @@ class ReadList extends React.Component {
 class Read extends React.Component {
     constructor(props) {
         super(props);
-        this.handleDeleteRead = this.handleDeleteRead.bind(this);
-        this.handleCompleteRead = this.handleCompleteRead.bind(this);
+
+        this.state = {
+            editMode: false
+        };
+
+        this.handleCancelEdit = this.handleCancelEdit.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleSaveEdit = this.handleSaveEdit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleComplete = this.handleComplete.bind(this);
         this.handleFaveButtonPress = this.handleFaveButtonPress.bind(this);
         this.handleImportantButtonPress = this.handleImportantButtonPress.bind(this);
     }
 
+    // Handle saving edits to the read
+    handleSaveEdit(newUrl, newDisplayName) {
+        this.props.onSaveEditRead(this.props.read.readIndex, newUrl, newDisplayName);
+        this.setState({ editMode: false });
+    }
+
+    // Handle cancelling an edit
+    handleCancelEdit() {
+        this.setState({ editMode: false });
+    }
+
+    // Handle editing a read
+    handleEdit() {
+        this.setState({ editMode: true });
+    }
+
     // Handle deleting the read
-    handleDeleteRead() {
-        this.props.onDeleteRead(this.props.readIndex);
+    handleDelete() {
+        this.props.onDeleteRead(this.props.read.readIndex);
     }
 
     // Handle marking a read as completed
-    handleCompleteRead() {
-        this.props.onCompleteRead(this.props.readIndex);
+    handleComplete() {
+        this.props.onCompleteRead(this.props.read.readIndex);
     }
 
     // Handle toggling the "favorite" status of the read
     handleFaveButtonPress() {
-        this.props.onFaveButtonPress(this.props.readIndex);
+        this.props.onFaveButtonPress(this.props.read.readIndex);
     }
 
     // Handle toggling the "important" status of the read
     handleImportantButtonPress() {
-        this.props.onImportantButtonPress(this.props.readIndex);
+        this.props.onImportantButtonPress(this.props.read.readIndex);
     }
 
     // Render the Read component
     render() {
         return (
-            <div className="readItem">
-
-                <a href={this.props.url} target="_blank">
+            <div className="readItemContainer">
+                {/* Display the edit popup if in edit mode */}
+                {
+                    this.state.editMode ?
+                        <EditRead displayName={this.props.read.displayName} url={this.props.read.url} onSave={this.handleSaveEdit} onCancel={this.handleCancelEdit} /> :
+                        null
+                }
+            <div key={this.props.uniqueKey} className={"readItem" + (this.state.editMode ? " editMode" : "")}>
+                <a href={this.props.read.url} target="_blank" rel="noopener noreferrer" >
                     <div className="readInfo">
-                        <p className="readName" >{this.props.displayName || this.props.url}</p>
-                        <ReadTimeStamp timeStamp={this.props.timeStamp} />
+                        <p className="readName" >{this.props.read.displayName || this.props.read.url}</p>
+                        <ReadTimeStamp timeStamp={this.props.read.timeStamp} />
                     </div>
                 </a>
                 <div className="readAction">
                     <div className="readFlair">
-                        <FlairButton key="faveButton" buttonClass="favorite" tooltip={this.props.isFavorite ? "Unfavorite" : "Favorite"} onFlairButtonPress={this.handleFaveButtonPress} iconName={this.props.isFavorite ? "star" : "star_border"} />
-                        <FlairButton key="importantButton" buttonClass="important" tooltip={this.props.isImportant ? "Unimportant" : "Important"} onFlairButtonPress={this.handleImportantButtonPress} iconName={this.props.isImportant ? "bookmark" : "bookmark_border"} />
+                        <IconButton buttonClass="flairButton" iconClass="favorite" iconName={this.props.read.isFavorite ? "star" : "star_border"} tooltip={this.props.read.isFavorite ? "Unfavorite" : "Favorite"} onButtonPress={this.handleFaveButtonPress} />
+                        <IconButton buttonClass="flairButton" iconClass="important" iconName={this.props.read.isImportant ? "bookmark" : "bookmark_border"} tooltip={this.props.read.isImportant ? "Make not important" : "Make Important"} onButtonPress={this.handleImportantButtonPress} />
                     </div>
 
-                    <button className="readButton" type="button" onClick={this.handleDeleteRead}>
-                        <i className="buttonIcon material-icons">clear</i>
-                        Delete
-          </button>
-
+                    <IconButton buttonClass="readButton" iconClass="buttonIcon" iconName="clear" tooltip="Delete" onButtonPress={this.handleDelete} />
+                    <IconButton buttonClass="readButton" iconClass="buttonIcon" iconName="edit" tooltip="Edit" onButtonPress={this.handleEdit} />
                     {/* If the read is not yet completed, display a button to complete it*/}
-                    {!this.props.isComplete ?
-                        <button className="readButton" type="button" onClick={this.handleCompleteRead}>
-                            <i className="buttonIcon material-icons">done</i>
-                            Complete
-            </button> :
-                        null}
+                    {
+                        !this.props.read.isComplete ?
+                        <IconButton buttonClass="readButton" iconClass="buttonIcon" iconName="done" tooltip="Done" onButtonPress={this.handleComplete} /> :
+                            null
+                    }
                 </div>
-            </div>);
+                </div>
+                </div>);
     }
 }
 
@@ -316,33 +354,37 @@ class ReadTimeStamp extends React.Component {
     }
 }
 
-// Component for user input of new reads
+// Component for user input of reads
 class ReadInput extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            url: "",
-            displayName: ""
+            url: this.props.url || "" ,
+            displayName: this.props.displayName || "",
+            errorMessage: ""
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUrlInput = this.handleUrlInput.bind(this);
         this.handleDisplayNameInput = this.handleDisplayNameInput.bind(this);
     }
 
-    // Handle submitting the new read form
+    // Handle submitting the form
     handleSubmit(event) {
         event.preventDefault();
 
-        // Only add if url is provided
-        if (this.state.url) {
-            this.props.onAddNewRead(this.state.url, this.state.displayName);
-            this.setState({ url: "", displayName: "" });
+        // Check if url is required and present
+        if (this.props.requireUrl && !this.state.url) {
+            this.setState({ errorMessage: "Url is required" });
+        }
+        else {
+            this.props.submitHandler(this.state.url, this.state.displayName);
+            this.setState({ url: "", displayName: "", errorMessage: "" });
         }
     }
 
     // Update state based on user input in the controlled url field
     handleUrlInput(event) {
-        this.setState({ url: event.target.value });
+        this.setState({ url: event.target.value, errorMessage: "" });
     }
 
     // Update state based on user input in the controlled display name field
@@ -353,40 +395,52 @@ class ReadInput extends React.Component {
     // Render the "add new" input box
     render() {
         return (
-            <div id="addNewRead" className={"addNew" + (this.props.animate ? " shake" : "")}>
+            <div className={this.props.styles}>
                 <form onSubmit={this.handleSubmit}>
-                    <p>Add a new read</p>
-                    <input type="url" id="urlInput" placeholder="enter url" value={this.state.url} onChange={this.handleUrlInput} />
-                    <input type="text" placeholder="enter display name" value={this.state.displayName} onChange={this.handleDisplayNameInput} />
-                    <input type="submit" className="appButton" value="Add" />
+                    <p>{this.props.label}</p>
+                    <input type="url" id="urlInput" placeholder="Enter url" value={this.state.url} onChange={this.handleUrlInput} />
+                    <input type="text" placeholder="Enter display name" value={this.state.displayName} onChange={this.handleDisplayNameInput} />
+
+                    {/*Include a cancel button if a handler is provided*/}
+                    {
+                        this.props.handleCancel ?
+                        <button type="button" className="appButton" onClick={this.props.handleCancel}>Cancel</button> :
+                            null
+                    }
+                    <input type="submit" className="appButton" value={this.props.submitButtonName} />
+                    <p className={"errorMessage" + (this.state.errorMessage ? "" : " hidden" )}>{"! " + this.state.errorMessage }</p>
                 </form>
-            </div>);
-    }
-}
-
-// Buttons which allow a user to mark a read with "flair", such as "liked" or "important"
-class FlairButton extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-    // Handle toggling the flair button.
-    // Behavior is provided by parent.
-    handleClick(event) {
-        this.props.onFlairButtonPress();
-    }
-
-    // Render the Flair button
-    render() {
-        return (
-            <div className="tooltipContainer flairButton" onClick={this.handleClick}>
-                <div className="tooltip">{this.props.tooltip}</div>
-                <i className={this.props.buttonClass + " material-icons"}>{this.props.iconName}</i>
             </div>
         );
     }
+}
+
+// Component for user input of a new read. 
+// Returns a ReadInput component.
+function NewRead(props) {
+    return (
+        <ReadInput styles={"newRead" + (props.animate ? " shake" : "")} label="Add a new read" requireUrl={true} submitButtonName="Add" submitHandler={props.onSave} />
+        );
+}
+
+// Component for editing a read. 
+// Returns a ReadInput component.
+function EditRead(props) {
+    return (
+        <div className="lock">
+            <ReadInput styles="editRead" label="Edit read" submitButtonName="Save" displayName={props.displayName} url={props.url} submitHandler={props.onSave} handleCancel={props.onCancel} />
+        </div>
+    );
+}
+
+// Button with tooltip displaying an icon.
+function IconButton(props) {
+        return (
+            <button type="button" className={props.buttonClass + " tooltipContainer"} onClick={props.onButtonPress}>
+                <div className="tooltip">{props.tooltip}</div>
+                <i className={props.iconClass + " material-icons"}>{props.iconName}</i>
+            </button>
+        );
 }
 
 // Filters to allow the user to adjust which reads are displayed

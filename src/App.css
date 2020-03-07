@@ -1,4 +1,5 @@
-﻿h1 {
+﻿/* App colors */
+h1 {
   margin: 0px;
   padding: 0px;
   font-size: 70px;
@@ -21,7 +22,7 @@ input {
   border: 1px solid black;
   padding: 3px; }
 
-.shadow, .addNew, .readItem {
+.shadow, .readInput, .newRead, .editRead, .readItem {
   box-shadow: 5px 3px #16aba6; }
 
 @keyframes shake {
@@ -45,13 +46,39 @@ input {
   padding: 20px 0;
   border-bottom: 2px solid #bac4d6; }
 
-.addNew {
-  padding: 15px;
+.hidden {
+  visibility: hidden; }
+
+/*Styles for action elements*/
+.popup, .editRead {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); }
+
+.readInput, .newRead, .editRead {
+  padding: 15px 15px 5px 15px; }
+
+.newRead {
   display: inline-block;
   background-color: #f7e58b; }
-  .addNew p {
-    line-height: 1; }
 
+.editRead {
+  background-color: #b2d4ca;
+  z-index: 2; }
+
+.lock {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(90, 90, 90, 0.4);
+  z-index: 2; }
+
+/*End styles for action elements*/
+/* Styles for text*/
 .logoLarge, h1 {
   font-weight: 600;
   color: #e9eef7;
@@ -68,6 +95,12 @@ input {
   font-size: 16px;
   line-height: 1.5em; }
 
+.errorMessage {
+  padding: 1px 0 0 2px;
+  font-size: 11px;
+  color: #b00000; }
+
+/* End text styles */
 .readListContainer {
   margin: 10px 0 0 0; }
 
@@ -77,13 +110,6 @@ input {
   width: 50%;
   min-width: 325px; }
 
-.filterGroup {
-  display: inline-block;
-  margin-top: 2px; }
-
-.filterGroup:not(:last-child) {
-  border-right: 1px solid #bac4d6; }
-
 /* Styles for individual "Reads" */
 .readItem {
   padding: 10px 10px 0 10px;
@@ -91,7 +117,7 @@ input {
   margin: auto;
   transition-duration: 0.4s; }
 
-.readItem:not(:last-child) {
+.readItemContainer:not(:last-child) {
   margin-bottom: 6px; }
 
 .readName {
@@ -110,6 +136,9 @@ input {
 .activeReadList .readInfo {
   border-bottom: 2px solid #cbc9ff; }
 
+.activeReadList .editMode {
+  background-color: #b2d4ca; }
+
 .completedReadList .readItem {
   background-color: #d8d8e8; }
 
@@ -119,23 +148,24 @@ input {
 .completedReadList .readInfo {
   border-bottom: 2px solid #d8d8e8; }
 
+.completedReadList .editMode {
+  background-color: #b2d4ca; }
+
+.readAction {
+  padding-bottom: 2px; }
+
 .readFlair {
   display: inline-block; }
-
-.readFlair .favorite {
-  color: #d99400; }
-
-.readFlair .favorite:hover {
-  color: #dbae4d; }
-
-.readFlair .important {
-  color: #e63c5e; }
-
-.readFlair .important:hover {
-  color: #e87289; }
-
-.readFlair i:hover {
-  cursor: pointer; }
+  .readFlair .favorite {
+    color: #d99400; }
+  .readFlair .favorite:hover {
+    color: #dbae4d; }
+  .readFlair .important {
+    color: #e63c5e; }
+  .readFlair .important:hover {
+    color: #e87289; }
+  .readFlair i:hover {
+    cursor: pointer; }
 
 .timeStamp {
   padding: 5px 0;
@@ -196,13 +226,22 @@ input {
 
 .flairButton {
   display: inline-block;
-  padding-right: 4px; }
+  background-color: inherit;
+  border: none;
+  padding: 0 3px 0 0;
+  margin: 0; }
 
 .buttonIcon {
   font-size: 14px;
-  margin: 0 1px;
   display: inline-flex;
-  vertical-align: text-bottom; }
+  vertical-align: middle; }
+
+.filterGroup {
+  display: inline-block;
+  margin-top: 2px; }
+
+.filterGroup:not(:last-child) {
+  border-right: 1px solid #bac4d6; }
 
 /* End Button styles*/
 /* Tooltip styles */
@@ -219,8 +258,10 @@ input {
   padding: 3px 5px;
   border-radius: 3px;
   position: absolute;
-  z-index: 1;
-  left: 105%; }
+  width: 50px;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -30px; }
 
 .tooltipContainer:hover .tooltip {
   visibility: visible; }
@@ -228,11 +269,12 @@ input {
 .tooltipContainer .tooltip::after {
   content: " ";
   position: absolute;
-  top: 50%;
-  right: 100%;
-  margin-top: -5px;
+  top: 100%;
+  /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent black transparent transparent; }
+  border-color: black transparent transparent transparent; }
 
 /* End Tooltip styles */
