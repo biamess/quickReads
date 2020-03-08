@@ -11,7 +11,6 @@ You can view the app live at https://biamess.github.io/quickReads/.
 ## Coming soon
 In the works is pinning functionality, advanced sorting options, and much more.
 
-
 ## Notes
-This project was built with React.
+This app was built with React.
 
