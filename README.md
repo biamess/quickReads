@@ -9,7 +9,9 @@ Ideal for keeping track of articles, videos, tutorials or job postings, just to 
 You can view the app live at https://biamess.github.io/quickReads/.
 
 ## Coming soon
-In the works is pinning functionality, advanced sorting options, the ability to edit saved reads, and much more.
+In the works is pinning functionality, advanced sorting options, and much more.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Notes
+This project was built with React.
 
