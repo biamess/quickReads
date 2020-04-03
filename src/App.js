@@ -398,6 +398,7 @@ class ReadInput extends React.Component {
                     <p>{this.props.label}</p>
                     <input type="url" id="urlInput" placeholder="Enter url" value={this.state.url} onChange={this.handleUrlInput} />
                     <input type="text" placeholder="Enter display name" value={this.state.displayName} onChange={this.handleDisplayNameInput} />
+                    <input type="submit" className="appButton" value={this.props.submitButtonName} />
 
                     {/*Include a cancel button if a cancel handler is provided*/}
                     {
@@ -405,7 +406,6 @@ class ReadInput extends React.Component {
                         <button type="button" className="appButton" onClick={this.props.handleCancel}>Cancel</button> :
                             null
                     }
-                    <input type="submit" className="appButton" value={this.props.submitButtonName} />
                     <p className={"errorMessage" + (this.state.errorMessage ? "" : " hidden" )}>{"! " + this.state.errorMessage }</p>
                 </form>
             </div>
@@ -473,7 +473,7 @@ function FilterButton(props) {
 }
 
 // Logo for the app
-function Logo(props) {
+function Logo() {
     return (
         <div className="appLogo">
             <h1>quickReads</h1>
